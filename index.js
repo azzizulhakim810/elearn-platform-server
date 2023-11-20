@@ -47,6 +47,12 @@ async function run() {
       const cursor = await assignmentCollection.findOne(query)
       res.send(cursor);
     })
+    app.get('/assignment/updateOne/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await assignmentCollection.findOne(query);
+      res.send(result);
+    })
     app.get('/submitAssignment/allSubmission', async(req, res) => {
       // console.log(req.query.email);
       let query = {};
@@ -67,6 +73,26 @@ async function run() {
       const newSubmission =req.body;
       // console.log(newSubmission);
       const result = await submittedCollection.insertOne(newSubmission)
+      res.send(result);
+    })
+    app.put('/assignment/updateOne/:id', async(req, res) => {
+      const id = req.params.id;
+      const options = {upsert: true};
+      const filter = {_id: new ObjectId(id)};
+      const updatedAssignment = req.body;
+      const assignment = {
+        $set:{
+          title: updatedAssignment.title,
+          url: updatedAssignment.url,
+          marks: updatedAssignment.marks,
+          level: updatedAssignment.level,
+          description: updatedAssignment.description,
+          date: updatedAssignment.date,
+          userEmail: updatedAssignment.currentUserEmail
+
+        }
+      }
+      const result = await assignmentCollection.updateOne(filter, assignment, options);
       res.send(result);
     })
     app.patch('/submitAssignment/allSubmission/:id', async(req, res) => {
