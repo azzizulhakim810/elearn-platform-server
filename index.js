@@ -41,19 +41,22 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     })
+    // View Single Assignment 
     app.get('/assignment/singleOne/:id', async(req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const cursor = await assignmentCollection.findOne(query)
       res.send(cursor);
     })
+    // Update Single Assignment 
     app.get('/assignment/updateOne/:id', async(req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const result = await assignmentCollection.findOne(query);
       res.send(result);
     })
-    app.get('/submitAssignment/allSubmission', async(req, res) => {
+    // Load for My Assignment Page 
+    app.get('/submitAssignment/specificSubmission', async(req, res) => {
       // console.log(req.query.email);
       let query = {};
       if(req.query?.email) {
@@ -61,6 +64,11 @@ async function run() {
       }
 
       const result = await submittedCollection.find(query).toArray();
+      res.send(result);
+    })
+    // Load for Submitted Page
+    app.get('/submitAssignment/allSubmission', async(req, res) => {
+      const result = await submittedCollection.find().toArray();
       res.send(result);
     })
     app.post('/assignment', async(req, res) => {
@@ -95,7 +103,7 @@ async function run() {
       const result = await assignmentCollection.updateOne(filter, assignment, options);
       res.send(result);
     })
-    app.patch('/submitAssignment/allSubmission/:id', async(req, res) => {
+    app.patch('/submitAssignment/specificSubmission/:id', async(req, res) => {
       const id = req.params.id;
       const filter = {_id: new ObjectId(id)};
       const updatedAssignment = req.body;
@@ -108,7 +116,7 @@ async function run() {
       const result = await submittedCollection.updateOne(filter, updatedStatus);
       res.send(result);
     });
-    app.delete('/submitAssignment/allSubmission/:id', async(req, res) => {
+    app.delete('/submitAssignment/specificSubmission/:id', async(req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const result = await submittedCollection.deleteOne(query);
