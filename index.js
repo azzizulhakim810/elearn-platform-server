@@ -125,7 +125,7 @@ async function run() {
       const result = await submittedCollection.updateOne(filter, updatedStatus);
       res.send(result);
     });
-    app.delete('/submitAssignment/specificSubmission/:id', async(req, res) => {
+    app.delete('/submitAssignment/allSubmission/:id', async(req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const result = await submittedCollection.deleteOne(query);
