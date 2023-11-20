@@ -71,6 +71,12 @@ async function run() {
       const result = await submittedCollection.find().toArray();
       res.send(result);
     })
+    // Load for Pending Status Assignments 
+    app.get('/submitAssignment/allSubmission/status', async(req, res) => {
+      const query = {status: "Pending"}
+      const result = await submittedCollection.find(query).toArray();
+      res.send(result);
+    })
     app.post('/assignment', async(req, res) => {
       const newAssignment = req.body;
       // console.log(newAssignment);
@@ -103,14 +109,17 @@ async function run() {
       const result = await assignmentCollection.updateOne(filter, assignment, options);
       res.send(result);
     })
-    app.patch('/submitAssignment/specificSubmission/:id', async(req, res) => {
+
+    app.patch('/submitAssignment/allSubmission/:id', async(req, res) => {
       const id = req.params.id;
       const filter = {_id: new ObjectId(id)};
       const updatedAssignment = req.body;
       // console.log(updatedAssignment);
       const updatedStatus = {
         $set:{
-          status:updatedAssignment.status
+          status:updatedAssignment.status,
+          obtainedMark: updatedAssignment.obtainedMark,
+          feedback: updatedAssignment.feedback,
         }
       };
       const result = await submittedCollection.updateOne(filter, updatedStatus);
