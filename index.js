@@ -73,7 +73,8 @@ async function run() {
       
       console.log(page, size);
       const result = await assignmentCollection.find()
-
+      .skip(page*size)
+      .limit(size)
       .toArray();
       res.send(result);
     })
