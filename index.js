@@ -68,7 +68,8 @@ async function run() {
 
     // View all Assignment 
     app.get('/assignment', async(req, res) => {
-
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
       
       console.log(page, size);
       const result = await assignmentCollection.find()
