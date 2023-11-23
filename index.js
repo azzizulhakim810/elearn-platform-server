@@ -20,7 +20,7 @@ app.use(cookieParser())
 
 // Create Middleware 
 const logger = (req, res, next) => {
-  console.log('log: info', req.method, req.url);
+  // console.log('log: info', req.method, req.url);
   next();
 }
 
@@ -68,11 +68,20 @@ async function run() {
 
     // View all Assignment 
     app.get('/assignment', async(req, res) => {
-      const cursor = assignmentCollection.find();
-      const result = await cursor.toArray();
+
+      
+      console.log(page, size);
+      const result = await assignmentCollection.find()
+
+      .toArray();
       res.send(result);
     })
 
+    // Pagination Count 
+    app.get('/assignmentsCount', async(req, res) => {
+      const count = await assignmentCollection.estimatedDocumentCount();
+      res.send({count})
+    })
 
     // View Single Assignment 
     app.get('/assignment/singleOne/:id', logger, async(req, res) => {
@@ -86,6 +95,7 @@ async function run() {
     // Update Single Assignment 
     app.get('/assignment/updateOne/:id', logger, async(req, res) => {
       const id = req.params.id;
+      // console.log("Token Oweneeeeeee", req.user);
       const query = {_id: new ObjectId(id)};
       const result = await assignmentCollection.findOne(query);
       res.send(result);
@@ -94,8 +104,8 @@ async function run() {
 
     // Load for My Assignment Page 
     app.get('/submitAssignment/specificSubmission', logger, verifyToken, async(req, res) => {
-      console.log(req.query.email);
-      console.log('Token Owner', req.user);
+      // console.log(req.query.email);
+      // console.log('Token Owner', req.user);
       if(req.user.email !== req.query.email) {
         return res.status(403).send({message: 'Forbidden Access'});
       }
@@ -159,11 +169,18 @@ async function run() {
     })
 
     // Update an Assignment 
-    app.put('/assignment/updateOne/:id', async(req, res) => {
+    app.put('/assignment/updateOne/:id', logger, verifyToken, async(req, res) => {
       const id = req.params.id;
+      if(req.user.email !== req.body.currentUserEmail) {
+        return res.status(403).send({message: 'Forbidden Access'});
+      }
+      const updatedAssignment = req.body;
       const options = {upsert: true};
       const filter = {_id: new ObjectId(id)};
-      const updatedAssignment = req.body;
+      
+      // console.log('SEE', req.body.currentUserEmail);
+      // console.log('QQQ', req.user.email);
+      
       const assignment = {
         $set:{
           title: updatedAssignment.title,
